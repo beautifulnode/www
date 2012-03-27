@@ -3,7 +3,7 @@ ecstatic = require 'ecstatic'
 creamer = require 'creamer'
 layout = require __dirname + '/views/layout'
 helpers = require 'coffeecup-helpers'
-nano = require('nano')('http://localhost:5984')
+nano = require('nano')('http://admin:panthers63@bnode.iriscouch.com')
 ghm = require("github-flavored-markdown")
 db = nano.use 'bnode'
 
@@ -37,4 +37,4 @@ app.router.post '/posts', ->
 app.router.get '/about', -> app.render(@res, about, about: '.active')
 
 
-app.start 3000
+app.start process.env.VMC_APP_PORT or 3000
