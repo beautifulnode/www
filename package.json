@@ -21,14 +21,15 @@
     "union": "*",
     "creamer": "*",
     "nano": "*",
-    "coffeecup-helpers": "*",
     "github-flavored-markdown": "*",
-    "moment": "*"
+    "moment": "*",
+    "resourceful": "*"
   },
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "request": "*"
   },
   "optionalDependencies": {}
 }

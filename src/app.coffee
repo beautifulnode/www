@@ -1,40 +1,34 @@
 flatiron = require 'flatiron'
 ecstatic = require 'ecstatic'
 creamer = require 'creamer'
-layout = require __dirname + '/views/layout'
-helpers = require 'coffeecup-helpers'
-nano = require('nano')('http://admin:panthers63@bnode.iriscouch.com')
-ghm = require("github-flavored-markdown")
-db = nano.use 'bnode'
 
+#views
 view = (name) -> "#{__dirname}/views/#{name}"
-index = require view("index")
-submit = require view("submit")
 about = require view("about")
-thanks = require view("thanks")
+
+# controllers
+controller = (name) -> "#{__dirname}/controllers/#{name}"
+posts = require controller("posts")
 
 app = flatiron.app
+# add plugins
 app.use flatiron.plugins.http
+app.use creamer, layout: require(__dirname + '/views/layout')
 
-helpers.layout = layout
-app.use creamer, helpers
+# attach creamer bind to router this.bind
+#app.router.attach -> @bind = app.bind
 
+# mount middleware
 app.http.before = [
   ecstatic __dirname + '/../public', autoIndex: off, cache: on
 ]
 
-app.router.get '/', -> 
-  db.list include_docs: true, descending: true, (e, b, h) =>
-    app.render(@res, index, home: '.active', rows: b.rows )
-app.router.get '/submit', -> app.render(@res, submit, submit: '.active')
-app.router.post '/posts', ->
-  # validate body
-  @req.body.contents = ghm.parse @req.body.contents
-  @req.body.tags = if @req.body.tags.length > 0 then @req.body.tags.split(',') else []
-  @req.body.submitted = new Date()
-  db.insert @req.body, (e, b, h) => app.render(@res, thanks)
-  
-app.router.get '/about', -> app.render(@res, about, about: '.active')
+# mount controllers
+app.router.mount posts
 
+app.router.get '/about', -> 
+  @res.html @bind(about, { about: '.active' })
 
-app.start process.env.VMC_APP_PORT or 3000
+# start server
+app.start process.env.VMC_APP_PORT or 3000, ->
+  console.log 'running....'
